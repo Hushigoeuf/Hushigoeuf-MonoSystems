@@ -1,24 +1,36 @@
-﻿namespace Hushigoeuf
+﻿using UnityEngine;
+
+namespace Hushigoeuf
 {
     public enum HGExtensionPositions
     {
         Self,
         Parent,
-        Hierarchy,
-        Custom
+        Hierarchy
     }
 
     public abstract class HGBaseExtension : HGMonoBehaviour
     {
         /// Где находится расширение по отношению к родителю (по умолчанию как компонент этого же объекта)
-        public virtual HGExtensionPositions ExtensionPosition => HGExtensionPositions.Self;
+        protected virtual HGExtensionPositions ExtensionPosition => HGExtensionPositions.Self;
 
         /// ID расширения по которому с ним можно работать в дальнейшем
         public virtual string ExtensionID => null;
 
         protected bool _initialized;
+        protected Transform _transform;
 
         public bool Initialized => _initialized;
+
+        public Transform Transform
+        {
+            get
+            {
+                if (_transform == null)
+                    _transform = transform;
+                return _transform;
+            }
+        }
 
         protected virtual void Awake()
         {
@@ -58,10 +70,26 @@
         {
         }
 
+        public virtual void OnUpdate(float dt)
+        {
+        }
+
+        public virtual void OnFixedUpdate(float fdt)
+        {
+        }
+
+        public virtual void OnLateUpdate(float dt)
+        {
+        }
+
         /// <summary>
         /// Регистрирует новое дочерние расширение.
         /// </summary>
         public virtual void RegisterSecondExtension(HGBaseExtension target)
+        {
+        }
+
+        public virtual void UnregisterSecondExtension(HGBaseExtension target)
         {
         }
 

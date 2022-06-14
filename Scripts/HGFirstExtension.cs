@@ -36,6 +36,30 @@ namespace Hushigoeuf
                     Extensions[i].Initialization();
         }
 
+        protected virtual void Update()
+        {
+            var dt = Time.deltaTime;
+            OnUpdate(dt);
+            for (var i = 0; i < Extensions.Count; i++)
+                Extensions[i].OnUpdate(dt);
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            var fdt = Time.fixedDeltaTime;
+            OnFixedUpdate(fdt);
+            for (var i = 0; i < Extensions.Count; i++)
+                Extensions[i].OnFixedUpdate(fdt);
+        }
+
+        protected virtual void LateUpdate()
+        {
+            var dt = Time.deltaTime;
+            OnLateUpdate(dt);
+            for (var i = 0; i < Extensions.Count; i++)
+                Extensions[i].OnLateUpdate(dt);
+        }
+
         /// <summary>
         /// Регистрирует новое дочерние расширение.
         /// </summary>
@@ -47,6 +71,16 @@ namespace Hushigoeuf
                 if (t.CompareFirstExtension(this))
                     if (!Extensions.Contains(t))
                         Extensions.Add(t);
+        }
+
+        public override void UnregisterSecondExtension(HGBaseExtension target)
+        {
+            base.UnregisterSecondExtension(target);
+
+            if (target is TSecondExtension t)
+                if (t.CompareFirstExtension(this))
+                    if (Extensions.Contains(t))
+                        Extensions.Remove(t);
         }
 
         #region GetExtensions

@@ -18,6 +18,13 @@ namespace Hushigoeuf
         /// Фиксированный ID расширения (если задан, то в инспекторе его изменить уже нельзя)
         protected virtual string CustomExtensionID => null;
 
+#if UNITY_EDITOR && ODIN_INSPECTOR
+        [HGBorders]
+        [HGReadOnly]
+#endif
+        [SerializeField]
+        protected HGExtensionPositions _extensionPosition = HGExtensionPositions.Self;
+
         /// Этот параметр будет виден при условии если можно задать ID в инспекторе
 #if UNITY_EDITOR && ODIN_INSPECTOR
         [BoxGroup(nameof(_dynamicExtensionID), false)]
@@ -40,10 +47,12 @@ namespace Hushigoeuf
         /// Этот параметр виден в инспекторе если родителя надо указать вручную
 #if UNITY_EDITOR && ODIN_INSPECTOR
         [BoxGroup(nameof(_parent), false)]
-        [ShowIf("$" + nameof(ExtensionPosition), HGExtensionPositions.Custom)]
+        [HideInInspector]
 #endif
         [SerializeField]
         private TFirstExtension _parent;
+
+        protected override HGExtensionPositions ExtensionPosition => _extensionPosition;
 
         /// Родительское расширение (если не задан, то пытается найти его самостоятельно)
         public TFirstExtension Parent
@@ -80,23 +89,29 @@ namespace Hushigoeuf
             }
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-
-            // Регистрируем этот компонент как дочернее расширения для родителя
-            if (Parent != null)
-                Parent.RegisterSecondExtension(this);
-        }
-
         protected override void Start()
         {
             base.Start();
 
             // Если родитель уже инициализирован, то делаем принудительную инициализацию
             // Иначе ждем пока родитель сам ее не вызовет
-            if (Parent.Initialized)
-                Initialization();
+            if (Parent.Initialized) Initialization();
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            if (Parent != null)
+                Parent.RegisterSecondExtension(this);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            if (Parent != null)
+                Parent.UnregisterSecondExtension(this);
         }
 
         /// <summary>
@@ -137,6 +152,19 @@ namespace Hushigoeuf
 
         /// Содержит ли статичный список ID хоть одно значение
         protected bool EditorIDListEnabled => (_editorExtensionIDList?.Count ?? 0) != 0;
+
+        [OnInspectorInit]
+        protected virtual void EditorInitExtensionPosition()
+        {
+            if (Application.isPlaying) return;
+
+            if (GetComponent<TFirstExtension>() != null)
+                _extensionPosition = HGExtensionPositions.Self;
+            else if (GetComponentInParent<TFirstExtension>() != null)
+                _extensionPosition = HGExtensionPositions.Parent;
+            else
+                _extensionPosition = HGExtensionPositions.Hierarchy;
+        }
 
         /// <summary>
         /// Инициализирует параметры для вывода в инспектор.
