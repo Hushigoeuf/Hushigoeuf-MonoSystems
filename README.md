@@ -5,7 +5,7 @@
 Например, создадим первый базовый класс Player, который будет отвечать за персонажа.
 
 ```csharp
-public class Player : FirstExtension<PlayerExtension>
+public class Player : HGBaseExtension<PlayerExtension>
 {
     public void TestMessage(string message)
     {
@@ -13,7 +13,7 @@ public class Player : FirstExtension<PlayerExtension>
     }
 }
 
-public abstract class PlayerExtension : SecondExtension<Player>
+public abstract class PlayerExtension : HGExtension<Player>
 {
 }
 ```
@@ -33,9 +33,12 @@ public class PlayerHealth : PlayerExtension
 {
     public void Hit(float damage)
     {
-        Parent.TestMessage("Take hit: " + damage);
+        Base.TestMessage("Take hit: " + damage);
     }
 }
 ```
 
 Если использовать это в паре с любой системой событий, то можно избежать сильных зависимостей.
+
+Пример использования такого решения:
+https://github.com/Hushigoeuf/Hushigoeuf-SmashAllOfThem
