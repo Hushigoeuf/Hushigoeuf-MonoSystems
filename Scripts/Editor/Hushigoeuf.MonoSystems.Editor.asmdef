@@ -1,0 +1,18 @@
+{
+    "name": "Hushigoeuf.MonoSystems.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7764bf7143b32194a849f64c2f9633ce"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
